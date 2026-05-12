@@ -2,10 +2,43 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Cham Archiver - Options</title>
+    <title>Cham Archiver — Options</title>
+    <style>
+      body { font: 14px system-ui, sans-serif; max-width: 640px; margin: 32px auto; padding: 0 16px; }
+      h1 { font-size: 20px; }
+      label { display: block; margin-top: 16px; font-weight: 600; }
+      input[type="text"], textarea { width: 100%; padding: 6px 8px; box-sizing: border-box; font: inherit; }
+      textarea { min-height: 96px; resize: vertical; }
+      .row { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
+      button { padding: 6px 12px; cursor: pointer; }
+      .status { margin-left: 8px; }
+      .ok { color: #197d3a; }
+      .err { color: #b00020; }
+      .warn { color: #a86b00; }
+    </style>
   </head>
   <body>
-    <h1>Cham Archiver Options</h1>
+    <h1>Cham Archiver</h1>
+
+    <label for="baseUrl">Cham base URL</label>
+    <input id="baseUrl" type="text" placeholder="https://cham.example.com" />
+
+    <div class="row">
+      <button id="test">Test connection</button>
+      <span id="status" class="status"></span>
+    </div>
+
+    <label for="optIn">Auto-archive domains (one per line)</label>
+    <textarea id="optIn"></textarea>
+
+    <label for="never">Never archive these domains (one per line)</label>
+    <textarea id="never"></textarea>
+
+    <div class="row">
+      <button id="save">Save</button>
+      <span id="saveStatus" class="status"></span>
+    </div>
+
     <script type="module" src="./options.ts"></script>
   </body>
 </html>
