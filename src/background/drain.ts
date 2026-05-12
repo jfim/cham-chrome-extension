@@ -38,7 +38,9 @@ export function startDrainScheduler(): void {
 export async function drainNeedsAuth(): Promise<void> {
   const items = await listQueue();
   await chrome.storage.local.set({
-    queue: items.map((it) => (it.status === 'needs_auth' ? { ...it, status: 'pending' as const } : it)),
+    queue: items.map((it) =>
+      it.status === 'needs_auth' ? { ...it, status: 'pending' as const } : it,
+    ),
   });
   await drainOnce();
 }
