@@ -1,0 +1,30 @@
+export const DEFAULT_DOMAIN_BLOCKLIST: readonly string[] = [
+  'mail.google.com',
+  'outlook.live.com',
+  'outlook.office.com',
+  'outlook.office365.com',
+  'mail.yahoo.com',
+  'mail.proton.me',
+  'protonmail.com',
+  'web.whatsapp.com',
+  'messages.google.com',
+  'discord.com',
+  'app.slack.com',
+  'localhost',
+  '127.0.0.1',
+  '0.0.0.0',
+  'chrome.google.com',
+];
+
+export const DEFAULT_URL_PATTERN_BLOCKLIST: readonly string[] = [
+  '/admin',
+  '/login',
+  '/signin',
+  '/signup',
+  '/logout',
+  '/account',
+  '/settings',
+  '/inbox',
+  '/checkout',
+  '/cart',
+];
