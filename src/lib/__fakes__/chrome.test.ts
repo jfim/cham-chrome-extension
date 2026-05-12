@@ -1,12 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { installChromeFake, resetChromeFake } from './chrome';
+import { describe, it, expect } from 'vitest';
 
+// chrome fake is installed and reset globally via vitest.setup.ts
 describe('chrome fake', () => {
-  beforeEach(() => {
-    installChromeFake();
-    resetChromeFake();
-  });
-
   it('storage.sync.set / get round-trips values', async () => {
     await chrome.storage.sync.set({ baseUrl: 'http://cham.local' });
     const out = await chrome.storage.sync.get('baseUrl');
