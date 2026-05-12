@@ -10,11 +10,11 @@ export const DEFAULT_DOMAIN_BLOCKLIST: readonly string[] = [
   'messages.google.com',
   'discord.com',
   'app.slack.com',
-  'localhost',
-  '127.0.0.1',
-  '0.0.0.0',
   'chrome.google.com',
 ];
+// Localhost/RFC1918/.local hosts are handled by isLocalHost in url-matcher,
+// which the decision pipeline applies after the domain blocklist so that the
+// user's Cham instance can still be reached when it runs on a local host.
 
 export const DEFAULT_URL_PATTERN_BLOCKLIST: readonly string[] = [
   '/admin',

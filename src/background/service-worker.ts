@@ -33,9 +33,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         sendResponse(decision);
       } else if (isOptInResponseMessage(msg)) {
         const config = await loadConfig();
-        if (msg.choice === 'always') {
+        if (msg.choice === 'always' && !config.optInDomains.includes(msg.domain)) {
           await saveConfig({ optInDomains: [...config.optInDomains, msg.domain] });
-        } else if (msg.choice === 'never') {
+        } else if (msg.choice === 'never' && !config.neverDomains.includes(msg.domain)) {
           await saveConfig({ neverDomains: [...config.neverDomains, msg.domain] });
         }
         if (msg.choice === 'always' || msg.choice === 'once') {

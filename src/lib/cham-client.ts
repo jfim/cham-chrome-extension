@@ -41,8 +41,8 @@ function isCloudflareAuthWall(response: Response, baseUrl: string): boolean {
     }
   }
 
-  const contentType = response.headers.get('Content-Type') ?? '';
-  if (!/json/i.test(contentType)) return true;
+  const contentType = response.headers.get('Content-Type');
+  if (contentType && !/json/i.test(contentType)) return true;
 
   return false;
 }

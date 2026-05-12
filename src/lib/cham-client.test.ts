@@ -68,7 +68,10 @@ describe('submitUrl', () => {
   });
 
   it('returns ok=false on Cham-side validation error (422)', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({ error: 'bad' }, { status: 422 })));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(jsonResponse({ error: 'bad' }, { status: 422 })),
+    );
     const result = await submitUrl({ baseUrl }, 'https://x.test');
     expect(result.ok).toBe(false);
     expect(result.status).toBe(422);
@@ -104,5 +107,12 @@ describe('pingCham', () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
     const r = await pingCham({ baseUrl });
     expect(r).toEqual({ status: 'unreachable' });
+  });
+
+  it('returns ok on a 204 response with no Content-Type', async () => {
+    // Cham could legitimately answer /health with 204; that must not be auth-wall.
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(null, { status: 204 })));
+    const r = await pingCham({ baseUrl });
+    expect(r).toEqual({ status: 'ok' });
   });
 });

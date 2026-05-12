@@ -18,10 +18,7 @@ describe('decide', () => {
   });
 
   it('rejects URLs matching default pattern blocklist', () => {
-    const result = decide(
-      { ...baseCandidate, url: 'https://x.test/admin/users' },
-      defaultConfig,
-    );
+    const result = decide({ ...baseCandidate, url: 'https://x.test/admin/users' }, defaultConfig);
     expect(result.action).toBe('reject');
     expect(result.reason).toMatch(/pattern/);
   });

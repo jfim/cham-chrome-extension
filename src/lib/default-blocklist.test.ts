@@ -8,10 +8,9 @@ describe('default blocklist', () => {
     expect(DEFAULT_DOMAIN_BLOCKLIST).toContain('outlook.office.com');
   });
 
-  it('blocks localhost-style hosts', () => {
-    expect(DEFAULT_DOMAIN_BLOCKLIST).toContain('localhost');
-    expect(DEFAULT_DOMAIN_BLOCKLIST).toContain('127.0.0.1');
-  });
+  // Localhost-style hosts are handled by isLocalHost in url-matcher,
+  // not by the domain blocklist, so that a user-configured Cham instance
+  // on a local host can still be reached.
 
   it('URL pattern blocklist covers admin/auth surfaces', () => {
     expect(DEFAULT_URL_PATTERN_BLOCKLIST).toContain('/admin');
