@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Cham Archiver",
+  "version": "0.1.0",
+  "description": "Archive browsed articles to your Cham instance.",
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "action": {
+    "default_popup": "src/popup/index.html",
+    "default_title": "Archive to Cham"
+  },
+  "background": {
+    "service_worker": "src/background/service-worker.ts",
+    "type": "module"
+  },
+  "options_ui": {
+    "page": "src/options/index.html",
+    "open_in_tab": true
+  }
+}
