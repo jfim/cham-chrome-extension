@@ -14,7 +14,7 @@ export class SubmitError extends Error {
   constructor(
     public readonly kind: SubmitErrorKind,
     message: string,
-    public readonly cause?: unknown,
+    public override readonly cause?: unknown,
   ) {
     super(message);
   }
