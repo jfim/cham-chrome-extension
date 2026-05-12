@@ -33,8 +33,7 @@ export class DwellTracker {
   tick(): void {
     if (this.fired) return;
     const now = Date.now();
-    const total =
-      this.accumulatedMs + (this.lastResumeAt !== null ? now - this.lastResumeAt : 0);
+    const total = this.accumulatedMs + (this.lastResumeAt !== null ? now - this.lastResumeAt : 0);
     if (total >= this.opts.dwellMs && this.opts.getScrollPct() >= this.opts.scrollPct) {
       this.fired = true;
       this.opts.onTrigger();
