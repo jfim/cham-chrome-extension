@@ -3,7 +3,7 @@
   "name": "Cham Archiver",
   "version": "0.1.0",
   "description": "Archive browsed articles to your Cham instance.",
-  "permissions": ["activeTab", "storage", "alarms", "notifications", "webNavigation"],
+  "permissions": ["activeTab", "tabs", "storage", "alarms", "notifications", "webNavigation"],
   "host_permissions": ["http://*/*", "https://*/*"],
   "action": {
     "default_popup": "src/popup/index.html",
