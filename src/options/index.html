@@ -3,9 +3,74 @@
   <head>
     <meta charset="UTF-8" />
     <title>Cham Archiver - Options</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 560px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+      label {
+        display: block;
+        margin-top: 1rem;
+        font-weight: 600;
+      }
+      .hint {
+        font-weight: 400;
+        font-size: 0.85em;
+        color: #555;
+      }
+      input[type='url'] {
+        width: 100%;
+        padding: 0.5rem;
+        font-size: 1rem;
+        box-sizing: border-box;
+      }
+      textarea {
+        width: 100%;
+        min-height: 6rem;
+        padding: 0.5rem;
+        font-family: ui-monospace, monospace;
+        font-size: 0.9rem;
+        box-sizing: border-box;
+      }
+      button {
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+      }
+      .status {
+        margin-top: 1rem;
+        min-height: 1.2em;
+      }
+      .ok {
+        color: green;
+      }
+      .err {
+        color: #b00;
+      }
+    </style>
   </head>
   <body>
     <h1>Cham Archiver Options</h1>
+
+    <label for="baseUrl">Cham base URL</label>
+    <input id="baseUrl" type="url" placeholder="https://cham.example.com" autocomplete="off" />
+
+    <label for="included">
+      Included domains
+      <div class="hint">One per line. Auto-archive every page on these domains.</div>
+    </label>
+    <textarea id="included" placeholder="example.com&#10;blog.example.org"></textarea>
+
+    <label for="excluded">
+      Excluded domains
+      <div class="hint">One per line. Never archive or offer to archive these.</div>
+    </label>
+    <textarea id="excluded" placeholder="mail.google.com&#10;banking.example.com"></textarea>
+
+    <button id="save" type="button">Save</button>
+    <p id="status" class="status"></p>
+
     <script type="module" src="./options.ts"></script>
   </body>
 </html>
