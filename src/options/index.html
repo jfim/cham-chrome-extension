@@ -3,9 +3,46 @@
   <head>
     <meta charset="UTF-8" />
     <title>Cham Archiver - Options</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 480px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+      label {
+        display: block;
+        margin-top: 1rem;
+        font-weight: 600;
+      }
+      input[type='url'] {
+        width: 100%;
+        padding: 0.5rem;
+        font-size: 1rem;
+        box-sizing: border-box;
+      }
+      button {
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+      }
+      .status {
+        margin-top: 1rem;
+        min-height: 1.2em;
+      }
+      .ok {
+        color: green;
+      }
+      .err {
+        color: #b00;
+      }
+    </style>
   </head>
   <body>
     <h1>Cham Archiver Options</h1>
+    <label for="baseUrl">Cham base URL</label>
+    <input id="baseUrl" type="url" placeholder="https://cham.example.com" autocomplete="off" />
+    <button id="save" type="button">Save</button>
+    <p id="status" class="status"></p>
     <script type="module" src="./options.ts"></script>
   </body>
 </html>
