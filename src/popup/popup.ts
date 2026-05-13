@@ -51,7 +51,7 @@ async function init(): Promise<void> {
     return;
   }
   if (sameHost(tab.url, config.baseUrl)) {
-    render('This page is your Cham instance — nothing to archive.');
+    window.close();
     return;
   }
   const url = tab.url;
