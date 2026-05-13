@@ -13,6 +13,7 @@
 ## File Structure
 
 **Core library (`src/lib/`):**
+
 - `config.ts` — `ChamConfig` type + defaults + validation
 - `storage.ts` — typed wrapper around `chrome.storage.sync`/`local` with an in-memory fake for tests
 - `default-blocklist.ts` — bundled domain + URL-pattern defaults (gmail, outlook, banking, localhost, etc.)
@@ -25,16 +26,19 @@
 - `logger.ts` — thin wrapper around `console` (so tests can assert / silence)
 
 **Content scripts (`src/content/`):**
+
 - `dwell-tracker.ts` — dwell + scroll detector, emits candidate when thresholds cross
 - `opt-in-banner.ts` — injected banner UI (Always / Just this one / Never)
 - `index.ts` — content script entrypoint, wires the two together
 
 **Background (`src/background/`):**
+
 - `service-worker.ts` — entry: registers listeners, owns the pipeline
 - `nav-listener.ts` — `chrome.webNavigation` listener that triggers a queue drain when the user visits the Cham origin
 - `drain.ts` — queue drain loop driven by alarms + online events
 
 **UI:**
+
 - `src/options/options.ts` + `index.html` — Cham URL, blocklist/allowlist editors, connection test
 - `src/popup/popup.ts` + `index.html` — current-tab status, manual actions, recent submissions + undo
 
@@ -45,6 +49,7 @@
 ## Task 1: Test infrastructure — Chrome API fake
 
 **Files:**
+
 - Create: `src/lib/__fakes__/chrome.ts`
 - Create: `src/lib/__fakes__/chrome.test.ts`
 
@@ -218,6 +223,7 @@ git commit -m "test: add chrome API fake and vitest setup"
 ## Task 2: Config module
 
 **Files:**
+
 - Create: `src/lib/config.ts`
 - Create: `src/lib/config.test.ts`
 
@@ -311,6 +317,7 @@ git commit -m "feat: add config types and validation helpers"
 ## Task 3: Storage wrapper
 
 **Files:**
+
 - Create: `src/lib/storage.ts`
 - Create: `src/lib/storage.test.ts`
 
@@ -387,6 +394,7 @@ git commit -m "feat: add typed wrapper for chrome.storage config"
 ## Task 4: Default blocklist
 
 **Files:**
+
 - Create: `src/lib/default-blocklist.ts`
 - Create: `src/lib/default-blocklist.test.ts`
 
@@ -481,6 +489,7 @@ git commit -m "feat: add default domain and URL-pattern blocklists"
 ## Task 5: URL matcher
 
 **Files:**
+
 - Create: `src/lib/url-matcher.ts`
 - Create: `src/lib/url-matcher.test.ts`
 
@@ -574,6 +583,7 @@ git commit -m "feat: add URL matcher with domain suffix + pattern + RFC1918 chec
 ## Task 6: Cham client — auth-wall detection and error types
 
 **Files:**
+
 - Modify: `src/lib/cham-client.ts` (full rewrite)
 - Modify: `src/lib/cham-client.test.ts` (extend)
 
@@ -652,7 +662,10 @@ describe('submitUrl', () => {
   });
 
   it('returns ok=false on Cham-side validation error (422)', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({ error: 'bad' }, { status: 422 })));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(jsonResponse({ error: 'bad' }, { status: 422 })),
+    );
     const result = await submitUrl({ baseUrl }, 'https://x.test');
     expect(result.ok).toBe(false);
     expect(result.status).toBe(422);
@@ -812,6 +825,7 @@ git commit -m "feat(client): detect Cloudflare Access auth-wall, add pingCham + 
 ## Task 7: Persistent submission queue
 
 **Files:**
+
 - Create: `src/lib/queue.ts`
 - Create: `src/lib/queue.test.ts`
 
@@ -955,6 +969,7 @@ git commit -m "feat: add persistent submission queue with auth-wall awareness"
 ## Task 8: Readability classifier
 
 **Files:**
+
 - Modify: `package.json` (add `@mozilla/readability`)
 - Create: `src/lib/readability-classifier.ts`
 - Create: `src/lib/readability-classifier.test.ts`
@@ -1063,6 +1078,7 @@ git commit -m "feat: add Readability-based article classifier"
 ## Task 9: Decision pipeline
 
 **Files:**
+
 - Create: `src/lib/decision-pipeline.ts`
 - Create: `src/lib/decision-pipeline.test.ts`
 
@@ -1090,10 +1106,7 @@ describe('decide', () => {
   });
 
   it('rejects URLs matching default pattern blocklist', () => {
-    const result = decide(
-      { ...baseCandidate, url: 'https://x.test/admin/users' },
-      defaultConfig,
-    );
+    const result = decide({ ...baseCandidate, url: 'https://x.test/admin/users' }, defaultConfig);
     expect(result.action).toBe('reject');
     expect(result.reason).toMatch(/pattern/);
   });
@@ -1205,6 +1218,7 @@ git commit -m "feat: add decision pipeline composing blocklist + Readability + o
 ## Task 10: Message protocol
 
 **Files:**
+
 - Create: `src/lib/messaging.ts`
 - Create: `src/lib/messaging.test.ts`
 
@@ -1317,6 +1331,7 @@ git commit -m "feat: add typed messaging protocol with runtime guards"
 ## Task 11: Logger
 
 **Files:**
+
 - Create: `src/lib/logger.ts`
 
 - [ ] **Step 1: Implement (no tests; trivial)**
@@ -1345,6 +1360,7 @@ git commit -m "feat: add prefixed logger"
 ## Task 12: Drain loop
 
 **Files:**
+
 - Create: `src/background/drain.ts`
 - Create: `src/background/drain.test.ts`
 
@@ -1492,6 +1508,7 @@ git commit -m "feat: add drain loop driven by alarms and online events"
 ## Task 13: Nav listener (drain on Cham origin visit)
 
 **Files:**
+
 - Create: `src/background/nav-listener.ts`
 - Create: `src/background/nav-listener.test.ts`
 
@@ -1557,14 +1574,16 @@ export function isChamOriginUrl(url: string, baseUrl: string): boolean {
 }
 
 export function registerNavListener(): void {
-  chrome.webNavigation.onCompleted.addListener(async (details: { url: string; frameId: number }) => {
-    if (details.frameId !== 0) return; // main frame only
-    const config = await loadConfig();
-    if (isChamOriginUrl(details.url, config.baseUrl)) {
-      log.info('Cham origin visited; draining needs_auth queue');
-      await drainNeedsAuth();
-    }
-  });
+  chrome.webNavigation.onCompleted.addListener(
+    async (details: { url: string; frameId: number }) => {
+      if (details.frameId !== 0) return; // main frame only
+      const config = await loadConfig();
+      if (isChamOriginUrl(details.url, config.baseUrl)) {
+        log.info('Cham origin visited; draining needs_auth queue');
+        await drainNeedsAuth();
+      }
+    },
+  );
 }
 ```
 
@@ -1585,6 +1604,7 @@ git commit -m "feat: drain needs_auth queue when user visits Cham origin"
 ## Task 14: Service worker — wire everything
 
 **Files:**
+
 - Modify: `src/background/service-worker.ts` (full rewrite)
 
 - [ ] **Step 1: Implement**
@@ -1672,6 +1692,7 @@ git commit -m "feat: wire service worker pipeline + messaging"
 ## Task 15: Dwell tracker (content script)
 
 **Files:**
+
 - Create: `src/content/dwell-tracker.ts`
 - Create: `src/content/dwell-tracker.test.ts`
 
@@ -1797,8 +1818,7 @@ export class DwellTracker {
   tick(): void {
     if (this.fired) return;
     const now = Date.now();
-    const total =
-      this.accumulatedMs + (this.lastResumeAt !== null ? now - this.lastResumeAt : 0);
+    const total = this.accumulatedMs + (this.lastResumeAt !== null ? now - this.lastResumeAt : 0);
     if (total >= this.opts.dwellMs && this.opts.getScrollPct() >= this.opts.scrollPct) {
       this.fired = true;
       this.opts.onTrigger();
@@ -1824,6 +1844,7 @@ git commit -m "feat: add dwell tracker (visibility-aware + scroll-gated)"
 ## Task 16: Opt-in banner
 
 **Files:**
+
 - Create: `src/content/opt-in-banner.ts`
 - Create: `src/content/opt-in-banner.test.ts`
 
@@ -1965,6 +1986,7 @@ git commit -m "feat: add in-page opt-in banner UI"
 ## Task 17: Content script entrypoint
 
 **Files:**
+
 - Modify: `src/manifest.json` (register content script)
 - Create: `src/content/index.ts`
 
@@ -2009,11 +2031,7 @@ Replace `src/manifest.json`:
 import { DwellTracker } from './dwell-tracker';
 import { showOptInBanner } from './opt-in-banner';
 import { classifyDocument } from '../lib/readability-classifier';
-import type {
-  CandidateMessage,
-  OptInResponseMessage,
-  Decision,
-} from '../lib/messaging';
+import type { CandidateMessage, OptInResponseMessage, Decision } from '../lib/messaging';
 import { loadConfig } from '../lib/storage';
 import { log } from '../lib/logger';
 
@@ -2091,6 +2109,7 @@ git commit -m "feat: content script entrypoint wires dwell + Readability + banne
 ## Task 18: Options page
 
 **Files:**
+
 - Modify: `src/options/index.html`
 - Modify: `src/options/options.ts`
 
@@ -2105,17 +2124,55 @@ Replace `src/options/index.html`:
     <meta charset="UTF-8" />
     <title>Cham Archiver — Options</title>
     <style>
-      body { font: 14px system-ui, sans-serif; max-width: 640px; margin: 32px auto; padding: 0 16px; }
-      h1 { font-size: 20px; }
-      label { display: block; margin-top: 16px; font-weight: 600; }
-      input[type="text"], textarea { width: 100%; padding: 6px 8px; box-sizing: border-box; font: inherit; }
-      textarea { min-height: 96px; resize: vertical; }
-      .row { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
-      button { padding: 6px 12px; cursor: pointer; }
-      .status { margin-left: 8px; }
-      .ok { color: #197d3a; }
-      .err { color: #b00020; }
-      .warn { color: #a86b00; }
+      body {
+        font:
+          14px system-ui,
+          sans-serif;
+        max-width: 640px;
+        margin: 32px auto;
+        padding: 0 16px;
+      }
+      h1 {
+        font-size: 20px;
+      }
+      label {
+        display: block;
+        margin-top: 16px;
+        font-weight: 600;
+      }
+      input[type='text'],
+      textarea {
+        width: 100%;
+        padding: 6px 8px;
+        box-sizing: border-box;
+        font: inherit;
+      }
+      textarea {
+        min-height: 96px;
+        resize: vertical;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-top: 12px;
+      }
+      button {
+        padding: 6px 12px;
+        cursor: pointer;
+      }
+      .status {
+        margin-left: 8px;
+      }
+      .ok {
+        color: #197d3a;
+      }
+      .err {
+        color: #b00020;
+      }
+      .warn {
+        color: #a86b00;
+      }
     </style>
   </head>
   <body>
@@ -2244,6 +2301,7 @@ git commit -m "feat: options page with connection test and list editors"
 ## Task 19: Popup
 
 **Files:**
+
 - Modify: `src/popup/index.html`
 - Modify: `src/popup/popup.ts`
 
@@ -2258,13 +2316,42 @@ Replace `src/popup/index.html`:
     <meta charset="UTF-8" />
     <title>Cham Archiver</title>
     <style>
-      body { font: 13px system-ui, sans-serif; width: 280px; padding: 12px; margin: 0; }
-      h1 { font-size: 14px; margin: 0 0 6px; }
-      .url { color: #666; word-break: break-all; margin-bottom: 10px; font-size: 12px; }
-      button { display: block; width: 100%; padding: 6px 8px; margin-top: 6px; cursor: pointer; font: inherit; }
-      .status { margin-top: 8px; font-size: 12px; }
-      .ok { color: #197d3a; }
-      .err { color: #b00020; }
+      body {
+        font:
+          13px system-ui,
+          sans-serif;
+        width: 280px;
+        padding: 12px;
+        margin: 0;
+      }
+      h1 {
+        font-size: 14px;
+        margin: 0 0 6px;
+      }
+      .url {
+        color: #666;
+        word-break: break-all;
+        margin-bottom: 10px;
+        font-size: 12px;
+      }
+      button {
+        display: block;
+        width: 100%;
+        padding: 6px 8px;
+        margin-top: 6px;
+        cursor: pointer;
+        font: inherit;
+      }
+      .status {
+        margin-top: 8px;
+        font-size: 12px;
+      }
+      .ok {
+        color: #197d3a;
+      }
+      .err {
+        color: #b00020;
+      }
     </style>
   </head>
   <body>
@@ -2366,6 +2453,7 @@ git commit -m "feat: popup with manual archive and per-domain quick toggles"
 ## Task 20: End-to-end manual verification
 
 **Files:** (no code changes — a checklist commit)
+
 - Modify: `README.md`
 
 - [ ] **Step 1: Run the full quality gate**
@@ -2382,6 +2470,7 @@ Expected: all green.
 - [ ] **Step 3: Verify each behavior**
 
 Manually verify:
+
 - [ ] Visit `mail.google.com` for a minute, scroll — no banner, no archive.
 - [ ] Visit any URL containing `/admin` — no banner, no archive.
 - [ ] Visit a news article on a fresh domain, dwell + scroll past threshold — banner appears with Always / Just this one / Never.
@@ -2395,7 +2484,6 @@ Manually verify:
 Append to `README.md` after the existing "Development" section:
 
 ```markdown
-
 ## Testing the extension manually
 
 After `npm run build`:
@@ -2424,6 +2512,7 @@ git commit -m "docs: add manual verification checklist and architecture pointer"
 git push
 gh run list --limit 1
 ```
+
 Expected: latest CI run shows `success`.
 
 ---
