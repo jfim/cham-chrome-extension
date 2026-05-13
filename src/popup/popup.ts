@@ -19,6 +19,54 @@ function sameHost(a: string, b: string): boolean {
   }
 }
 
+interface QueueItem {
+  url: string;
+  title?: string;
+  ts: number;
+}
+
+async function getQueue(): Promise<QueueItem[]> {
+  const { queue } = await chrome.storage.local.get('queue');
+  return Array.isArray(queue) ? (queue as QueueItem[]) : [];
+}
+
+function renderQueueSection(container: HTMLElement, queue: QueueItem[]): void {
+  const section = document.createElement('section');
+  section.className = 'queue';
+  const summary = document.createElement('button');
+  summary.type = 'button';
+  summary.className = 'queue-summary';
+  summary.textContent = `${queue.length} item${queue.length === 1 ? '' : 's'} queued`;
+  section.append(summary);
+
+  const list = document.createElement('ul');
+  list.className = 'queue-list';
+  list.hidden = true;
+  if (queue.length === 0) {
+    const li = document.createElement('li');
+    li.className = 'queue-empty';
+    li.textContent = 'Queue is empty.';
+    list.append(li);
+  } else {
+    for (const item of queue) {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = item.url;
+      a.target = '_blank';
+      a.rel = 'noreferrer noopener';
+      a.textContent = item.title?.trim() || item.url;
+      a.title = item.url;
+      li.append(a);
+      list.append(li);
+    }
+  }
+  section.append(list);
+  summary.addEventListener('click', () => {
+    list.hidden = !list.hidden;
+  });
+  container.append(section);
+}
+
 function render(message: string, action?: { label: string; onClick: () => void }): void {
   const body = document.body;
   body.innerHTML = '';
@@ -61,6 +109,8 @@ async function init(): Promise<void> {
       void submitUrl(config, url);
     },
   });
+  const queue = await getQueue();
+  renderQueueSection(document.body, queue);
 }
 
 void init();
