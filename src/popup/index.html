@@ -3,6 +3,60 @@
   <head>
     <meta charset="UTF-8" />
     <title>Cham Archiver</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        min-width: 280px;
+        margin: 0;
+        padding: 0.75rem 1rem;
+      }
+      h1 {
+        margin: 0 0 0.5rem;
+        font-size: 1.1rem;
+      }
+      button {
+        padding: 0.4rem 0.8rem;
+      }
+      .queue {
+        margin-top: 1rem;
+        border-top: 1px solid #ddd;
+        padding-top: 0.75rem;
+      }
+      .queue-summary {
+        background: none;
+        border: 0;
+        padding: 0;
+        font: inherit;
+        color: #06c;
+        cursor: pointer;
+        text-align: left;
+      }
+      .queue-summary:hover {
+        text-decoration: underline;
+      }
+      .queue-list {
+        list-style: none;
+        margin: 0.5rem 0 0;
+        padding: 0;
+        max-height: 220px;
+        overflow-y: auto;
+      }
+      .queue-list li {
+        padding: 0.25rem 0;
+        font-size: 0.85rem;
+      }
+      .queue-list a {
+        color: #06c;
+        text-decoration: none;
+        word-break: break-all;
+      }
+      .queue-list a:hover {
+        text-decoration: underline;
+      }
+      .queue-empty {
+        color: #777;
+      }
+    </style>
   </head>
   <body>
     <h1>Cham</h1>
